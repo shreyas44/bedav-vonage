@@ -1,0 +1,22 @@
+{
+  "name": "bedav-bot-vonage",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "body-parser": "^1.19.0",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "graphql": "^15.4.0",
+    "graphql-request": "^3.4.0",
+    "js-base64": "^3.6.0",
+    "outdent": "^0.8.0"
+  }
+}
