@@ -1,41 +1,36 @@
 const { gql } = require("graphql-request")
 
-const hospitalFields = `
-  id
-  name
-  icuAvailable
-  hduAvailable                
-  oxygenAvailable
-  generalAvailable
-  ventilatorsAvailable
-
-  icuOccupied
-  hduOccupied
-  oxygenOccupied
-  generalOccupied
-  ventilatorsOccupied
-  
-  icuTotal
-  hduTotal
-  oxygenTotal
-  generalTotal
-  ventilatorsTotal
-  address
-  latitude
-  longitude
-  phone
-  website
-  city
-  state
-`
-
 const searchGraphQLQuery = gql`
-  query($city: String, $query: String) {
-    locality(name: $city) {
+  query($location: String, $query: String) {
+    locality(name: $location) {
       hospitals(first: 10, searchQuery: $query) {
         edges {
           node {
-            ${hospitalFields}
+            id
+            name
+            phone
+            website
+            address
+            latitude
+            longitude
+
+            icuAvailable
+            hduAvailable
+            oxygenAvailable
+            generalAvailable
+            ventilatorsAvailable
+
+            icuOccupied
+            hduOccupied
+            oxygenOccupied
+            generalOccupied
+            ventilatorsOccupied
+
+            icuTotal
+            hduTotal
+            oxygenTotal
+            generalTotal
+            ventilatorsTotal
           }
         }
       }
@@ -43,15 +38,19 @@ const searchGraphQLQuery = gql`
   }
 `
 
-const hospitalGraphQLQuery = gql`
+const directionsGraphQLQuery = gql`
   query($id: ID!) {
     hospital(id: $id) {
-      ${hospitalFields}
+      id
+      longitude
+      latitude
+      name
+      address
     }
   }
 `
 
 module.exports = {
   searchGraphQLQuery,
-  hospitalGraphQLQuery,
+  directionsGraphQLQuery,
 }

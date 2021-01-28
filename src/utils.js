@@ -39,7 +39,6 @@ const fixedMessages = {
       18. West Godavari
       19. Kadapa
   `,
-  faq: "",
 }
 
 const cityKey = {
@@ -74,10 +73,7 @@ const removeEmptyLines = (string) => {
   const newLines = []
 
   for (const line of lines) {
-    if (line.match(/^\s*$/)) {
-      continue
-    }
-
+    if (line.match(/^\s*$/)) continue
     newLines.push(line)
   }
 
@@ -92,9 +88,9 @@ const sendMessage = async (to, message, type = "text") => {
   let from = { type: to.type }
 
   if (to.type === "whatsapp") {
-    from.number = "14157386170"
+    from.number = process.env.WHATSAPP_NUMBER
   } else if (to.type === "messenger") {
-    from.id = "107083064136738"
+    from.id = process.env.MESSENGER_ID
   }
 
   await axios.post(
@@ -140,14 +136,14 @@ const getFormattedHospital = (hospital) => {
       ${h.icuTotal !== 0 && h.icuAvailable !== null ? `_ICU Available_: ${h.icuAvailable} (${percentages.icu})` : ""}
       ${h.hduTotal !== 0 && h.icuAvailable !== null ? `_HDU Avalable_: ${h.hduAvailable} (${percentages.hdu})` : ""}
       ${h.oxygenTotal !== 0 && h.oxygenAvailable !== null ? `_Oxygen Available_: ${h.oxygenAvailable} (${percentages.oxygen}})` : ""}
-      ${h.generalTotal !== 0 && h.generalAvailable !== null ? `_General Available_: ${h.generalAvailable} (${percentages.general})` : ""}
+      ${!h.generalTotal !== 0 && h.generalAvailable !== null ? `_General Available_: ${h.generalAvailable} (${percentages.general})` : ""}
       ${
-        h.ventilatorsTotal !== 0 && h.ventilatorsAvailable !== null
+        !h.ventilatorsTotal !== 0 && h.ventilatorsAvailable !== null
           ? `_Ventilators Available_: ${h.ventilatorsAvailable} (${percentages.ventilators})`
           : ""
       }
       ${h.phone !== null ? `_Phone_: ${h.phone}` : ""}
-      ${h.phone !== null ? `_Website_: ${h.website}` : ""}
+      ${h.website !== null ? `_Website_: ${h.website}` : ""}
   `
 
   return removeEmptyLines(formatted)

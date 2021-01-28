@@ -2,7 +2,7 @@ const express = require("express")
 const bodyParser = require("body-parser")
 const { GraphQLClient } = require("graphql-request")
 const { sendMessage, getFormattedHospitals, fixedMessages, cityKey } = require("./utils")
-const { hospitalGraphQLQuery, searchGraphQLQuery } = require("./queries")
+const { directionsGraphQLQuery, searchGraphQLQuery } = require("./queries")
 const { encode } = require("js-base64")
 require("dotenv").config()
 
@@ -24,7 +24,7 @@ const handleSearch = async (message, to) => {
   }
 
   try {
-    const data = await client.request(searchGraphQLQuery, { city: cityKey[city], query: searchQuery })
+    const data = await client.request(searchGraphQLQuery, { location: cityKey[city], query: searchQuery })
     const { edges } = data.locality.hospitals
     const hospitals = edges.map((item) => item.node)
     const formatedMessage = getFormattedHospitals(hospitals)
@@ -47,7 +47,7 @@ const handleDirections = async (message, to) => {
   hospitalId = encode(`Hospital:${hospitalId}`)
 
   try {
-    const { hospital } = await client.request(hospitalGraphQLQuery, { id: hospitalId })
+    const { hospital } = await client.request(directionsGraphQLQuery, { id: hospitalId })
 
     if (to.type === "whatsapp") {
       sendMessage(
@@ -64,7 +64,11 @@ const handleDirections = async (message, to) => {
         "custom"
       )
     } else {
-      sendMessage(to, `https://maps.google.com/maps?q=${hospital.latitude},${hospital.longitude}\n*${hospital.name}*\n${hospital.address}\n`)
+      const link = `https://maps.google.com/maps?q=${hospital.latitude},${hospital.longitude}`
+      const message = `${link}\n*${hospital.name}*\n${hospital.address}\n`
+
+      // send a regular text message if the user is using messenger
+      sendMessage(to, message)
     }
   } catch (error) {
     sendMessage(to, "Please enter a valid Hospital ID")
@@ -80,7 +84,7 @@ const handleInbound = async (request, response) => {
     handleSearch(text, to)
   } else if (text.startsWith("get directions to")) {
     handleDirections(text, to)
-  } else if (["help", "hi"].includes(text)) {
+  } else if (["help", "hi", "hey", "hello"].includes(text)) {
     sendMessage(to, fixedMessages.help)
   } else if (text === "cities") {
     sendMessage(to, fixedMessages.cities)
