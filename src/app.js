@@ -101,12 +101,7 @@ const handleStatus = (request, response) => {
 
 const app = express()
 
-app.use(bodyParser.json())
-app.use(
-  bodyParser.urlencoded({
-    extended: true,
-  })
-)
+app.use(express.json())
 
 app.post("/webhooks/inbound", handleInbound)
 app.post("/webhooks/status", handleStatus)
